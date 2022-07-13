@@ -24,7 +24,7 @@
         android:theme="@style/Theme.MyStoryApp"
         tools:targetApi="31">
         <activity
-            android:name=".StoryMapsActivity"
+            android:name=".ui.story.maps.StoryMapsActivity"
             android:exported="false" />
         <activity
             android:name="com.example.mystoryapp.ui.story.addstory.CameraxActivity"

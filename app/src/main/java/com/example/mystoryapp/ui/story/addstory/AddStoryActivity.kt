@@ -10,6 +10,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -22,6 +23,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
+import com.example.mystoryapp.database.Result
+import com.example.mystoryapp.ui.story.main.StoryActivity
 
 class AddStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddStoryBinding
@@ -53,17 +56,33 @@ class AddStoryActivity : AppCompatActivity() {
             if (photoFile == null){
                 Toast.makeText(this, "Photo is required", Toast.LENGTH_SHORT).show()
             }else{
-                addStoryModel.addNewStory(binding.etAddstorynote.text.toString(), 0.0, 0.0, photoFile!!, user.token.toString())
+                addStoryModel.addNewStory(binding.etAddstorynote.text.toString(), 0.0, 0.0, photoFile!!).observe(this){
+                    when (it) {
+//                        is Result.Loading -> {
+//                            binding.addStoryUploadProgressBar.visibility = View.VISIBLE
+//                        }
+                        is Result.Error -> {
+                            Toast.makeText(this, "Add story gagal", Toast.LENGTH_SHORT).show()
+                        }
+                        is Result.Success -> {
+//                            binding.addStoryUploadProgressBar.visibility = View.GONE
+                            val intent = Intent()
+//                            intent.putExtra(StoryActivity.ADD_STORY_SUCCESS_EXTRA, true)
+//                            setResult(StoryActivity.ADD_STORY_RESULT_CODE, intent)
+                            finish()
+                        }
+                    }
+                }
             }
         }
 
-        addStoryModel.addNewStoryResponse.observe(this){
-            if(it.error == false){
-                finish()
-            }else{
-                Toast.makeText(this, "Add story gagal", Toast.LENGTH_SHORT).show()
-            }
-        }
+//        addStoryModel.addNewStoryResponse.observe(this){
+//            if(it.error == false){
+//                finish()
+//            }else{
+//                Toast.makeText(this, "Add story gagal", Toast.LENGTH_SHORT).show()
+//            }
+//        }
         binding.btnAddstorycamera.setOnClickListener {
             if (!allPermissionsGranted()) {
                 ActivityCompat.requestPermissions(

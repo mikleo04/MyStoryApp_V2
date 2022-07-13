@@ -9,20 +9,21 @@ import com.example.mystoryapp.api.ApiService
 import com.example.mystoryapp.api.response.ListStoryItem
 
 @OptIn(ExperimentalPagingApi::class)
-class StoryMediator( private val database: DatabaseStory, private val apiService: ApiService) : RemoteMediator<Int, ListStoryItem>() {
+class StoryRemoteMediator( private val database: DatabaseStory, private val apiService: ApiService) : RemoteMediator<Int, ListStoryItem>() {
+
     private companion object {
         const val INITIAL_PAGE_INDEX = 1
     }
 
-    override suspend fun initialize(): RemoteMediator.InitializeAction {
-        return RemoteMediator.InitializeAction.LAUNCH_INITIAL_REFRESH
+    override suspend fun initialize(): InitializeAction {
+        return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ListStoryItem>
-    ): RemoteMediator.MediatorResult {
+    ): MediatorResult {
         val page = when (loadType) {
             LoadType.REFRESH ->{
                 val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
@@ -31,13 +32,13 @@ class StoryMediator( private val database: DatabaseStory, private val apiService
             LoadType.PREPEND -> {
                 val remoteKeys = getRemoteKeyForFirstItem(state)
                 val prevKey = remoteKeys?.prevKey
-                    ?: return RemoteMediator.MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
                 prevKey
             }
             LoadType.APPEND -> {
                 val remoteKeys = getRemoteKeyForLastItem(state)
                 val nextKey = remoteKeys?.nextKey
-                    ?: return RemoteMediator.MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
                 nextKey
             }
         }
@@ -60,9 +61,9 @@ class StoryMediator( private val database: DatabaseStory, private val apiService
                 database.remoteKeysDao().insertAll(keys)
                 database.storyDao().insertStory(responseData)
             }
-            return RemoteMediator.MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
+            return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: Exception) {
-            return RemoteMediator.MediatorResult.Error(exception)
+            return MediatorResult.Error(exception)
         }
     }
 

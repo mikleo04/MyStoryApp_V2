@@ -3,39 +3,8 @@ package com.example.mystoryapp.ui.register
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.mystoryapp.api.ApiConfig
-import com.example.mystoryapp.api.response.RegisterResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.mystoryapp.database.StoryRepo
 
-class RegisterViewModel: ViewModel() {
-    private val _registerResponse = MutableLiveData<RegisterResponse>()
-    val registerResponse: LiveData<RegisterResponse> = _registerResponse
-
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-    
-    fun register(name: String, email: String, password: String) {
-        _isLoading.value = true
-        val client = ApiConfig.getApiService().register(name, email, password)
-        client.enqueue(object : Callback<RegisterResponse> {
-            override fun onResponse(
-                call: Call<RegisterResponse>,
-                response: Response<RegisterResponse>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _registerResponse.value = response.body()
-                }else{
-                    _registerResponse.value = RegisterResponse()
-                }
-            }
-
-            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                _isLoading.value = false
-            }
-        })
-    }
-
+class RegisterViewModel(private val storyRepository: StoryRepo) : ViewModel() {
+    fun register(name: String, email: String, password: String) =  storyRepository.register(name, email, password)
 }

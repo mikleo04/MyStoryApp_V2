@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.ViewModelProvider
@@ -20,20 +21,26 @@ import com.example.mystoryapp.data.User
 import com.example.mystoryapp.databinding.ActivityStoryBinding
 import com.example.mystoryapp.ui.login.MainActivity
 import com.example.mystoryapp.preferences.UserPreference
+import com.example.mystoryapp.ui.StoryModel
+import com.example.mystoryapp.ui.ViewModelFactory
 
 class StoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStoryBinding
-    private lateinit var storyModel: StoryViewModel
+//    private lateinit var storyModel: StoryViewModel
     private lateinit var listStoryAdapter: StoryAdapter
     private var storyList = arrayListOf<ListStoryItem>()
 
+    private val storyModel: StoryModel by viewModels {
+        ViewModelFactory(this, UserPreference(this).getUser().token.toString())
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityStoryBinding.inflate(layoutInflater)
+        listStoryAdapter = StoryAdapter()
         setContentView(binding.root)
-        storyModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(
-            StoryViewModel::class.java)
-        listStoryAdapter = StoryAdapter(storyList)
+//        storyModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(
+//            StoryViewModel::class.java)
+//        listStoryAdapter = StoryAdapter(storyList)
 
         supportActionBar?.title = getString(R.string.app_name)
 
@@ -42,21 +49,22 @@ class StoryActivity : AppCompatActivity() {
         }
         
         showStoryRecyclerList()
-        storyModel.allStoryResponse.observe(this){
-            storyList.clear()
-            storyList = it.listStory as ArrayList<ListStoryItem>
+        storyModel.getStoryMediator().observe(this){
+//            storyList.clear()
+//            storyList = it.listStory as ArrayList<ListStoryItem>
+            listStoryAdapter.submitData(lifecycle, it)
             showStoryRecyclerList()
         }
-        storyModel.isLoading.observe(this){
-            if (it){
-                binding.pbStoryprogressbar.visibility = View.VISIBLE
-            }else{
-                binding.pbStoryprogressbar.visibility = View.GONE
-            }
-        }
-        storyModel.getAllStory(UserPreference(this).getUser().token.toString())
+//        storyModel.isLoading.observe(this){
+//            if (it){
+//                binding.pbStoryprogressbar.visibility = View.VISIBLE
+//            }else{
+//                binding.pbStoryprogressbar.visibility = View.GONE
+//            }
+//        }
+//        storyModel.getAllStory(UserPreference(this).getUser().token.toString())
     }
-    
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.option_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -79,9 +87,11 @@ class StoryActivity : AppCompatActivity() {
                 }
             }
             R.id.option_menu_refresh -> {
-                storyModel.getAllStory(UserPreference(this).getUser().token.toString())
+//                storyModel.getAllStory(UserPreference(this).getUser().token.toString())
                 listStoryAdapter.notifyDatasetChangedHelper()
                 binding.pbStoryprogressbar.visibility = View.VISIBLE
+                listStoryAdapter.refresh()
+                listStoryAdapter.notifyDataSetChanged()
             }
         }
 
@@ -90,12 +100,12 @@ class StoryActivity : AppCompatActivity() {
     
     override fun onResume() {
         super.onResume()
-        storyModel.getAllStory(UserPreference(this).getUser().token.toString())
+//        storyModel.getAllStory(UserPreference(this).getUser().token.toString())
         listStoryAdapter.notifyDatasetChangedHelper()
     }
 
     private fun showStoryRecyclerList(){
-        listStoryAdapter = StoryAdapter(storyList)
+//        listStoryAdapter = StoryAdapter(storyList)
         binding.rvStorylist.layoutManager = LinearLayoutManager(this@StoryActivity)
 
         listStoryAdapter.setOnItemClickCallback(object : StoryAdapter.OnItemClickCallback{

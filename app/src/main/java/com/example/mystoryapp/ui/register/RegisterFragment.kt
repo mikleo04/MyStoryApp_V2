@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.mystoryapp.databinding.FragmentRegisterBinding
 import com.example.mystoryapp.tools.Matcher
+import com.example.mystoryapp.database.Result
 
 class RegisterFragment : Fragment() {
 
@@ -24,21 +25,21 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         registerViewModelModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(RegisterViewModel::class.java)
 
-        registerViewModelModel.registerResponse.observe(viewLifecycleOwner) {
-            if (it.error == false) {
-                activity?.finish()
-            } else {
-                Toast.makeText(context, "Registration Failed", Toast.LENGTH_SHORT).show()
-            }
-        }
+//        registerViewModelModel.registerResponse.observe(viewLifecycleOwner) {
+//            if (it.error == false) {
+//                activity?.finish()
+//            } else {
+//                Toast.makeText(context, "Registration Failed", Toast.LENGTH_SHORT).show()
+//            }
+//        }
 
-        registerViewModelModel.isLoading.observe(viewLifecycleOwner) {
-            if (it) {
-                binding.pbRegisterprogressbar.visibility = View.VISIBLE
-            } else {
-                binding.pbRegisterprogressbar.visibility = View.GONE
-            }
-        }
+//        registerViewModelModel.isLoading.observe(viewLifecycleOwner) {
+//            if (it) {
+//                binding.pbRegisterprogressbar.visibility = View.VISIBLE
+//            } else {
+//                binding.pbRegisterprogressbar.visibility = View.GONE
+//            }
+//        }
 
         binding.btnRegister.setOnClickListener{
                 val name = binding.etRegistername.text.toString()
@@ -53,7 +54,24 @@ class RegisterFragment : Fragment() {
                 ){
                     Toast.makeText(requireContext(), "Please check your data", Toast.LENGTH_SHORT).show()
                 }else{
-                    registerViewModelModel.register(name, email, password)
+                    registerViewModelModel.register(name, email, password).observe(this){
+                        when (it) {
+                            is Result.Loading -> {
+                                binding.pbRegisterprogressbar.visibility = View.VISIBLE
+                            }
+                            is Result.Error -> {
+                                binding.pbRegisterprogressbar.visibility = View.GONE
+                            }
+                            is Result.Success -> {
+                                binding.pbRegisterprogressbar.visibility = View.GONE
+                                if (it.data.error == false){
+                                    activity?.finish()
+                                }else{
+                                    Toast.makeText(context, "Registration Failed", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
                 }
         }
         binding.tvHaveaccount.setOnClickListener { activity?.onBackPressed() }
