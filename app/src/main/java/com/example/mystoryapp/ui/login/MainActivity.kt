@@ -3,7 +3,6 @@ package com.example.mystoryapp.ui.login
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,29 +11,13 @@ import com.example.mystoryapp.R
 import com.example.mystoryapp.ui.register.RegisterActivity
 import com.example.mystoryapp.ui.story.main.StoryActivity
 import com.example.mystoryapp.data.User
-import com.example.mystoryapp.database.Injection
 import com.example.mystoryapp.databinding.ActivityMainBinding
 import com.example.mystoryapp.preferences.UserPreference
 import com.example.mystoryapp.tools.Matcher
-import com.example.mystoryapp.database.Result
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-//    private lateinit var userPreference: UserPreference
     private lateinit var loginViewModelModel: LoginViewModel
-    companion object{
-        const val USER_EXTRA = "user_extra_data_after_create_account"
-        const val USER_EXTRA_CODE = 1
-    }
-
-    private val resultLauncher = registerForActivityResult( ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == USER_EXTRA_CODE && result.data != null) {
-            val user = result.data!!.getParcelableExtra<User>(USER_EXTRA)
-            binding.etLoginemail.setText(user?.email)
-            binding.etLoginpassword.setText(user?.password)
-        }
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,11 +38,9 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.title = "Login"
         supportActionBar?.hide()
         binding.tvNoaccount.setOnClickListener {
-            resultLauncher.launch(Intent(this@MainActivity, RegisterActivity::class.java))
+            startActivity(Intent(this@MainActivity, RegisterActivity::class.java))
         }
         
-        
-        //Login process
         loginViewModelModel.isLoading.observe(this){
             if (it) binding.pbLoginprogressbar.visibility = View.VISIBLE
             else binding.pbLoginprogressbar.visibility = View.GONE
@@ -78,7 +59,6 @@ class MainActivity : AppCompatActivity() {
             }else{
                 Toast.makeText(this, getString(R.string.wrong_email_or_password), Toast.LENGTH_SHORT).show()
             }
-
         }
         binding.btnLogin.setOnClickListener{
             val email = binding.etLoginemail.text.toString()
@@ -94,57 +74,5 @@ class MainActivity : AppCompatActivity() {
                 loginViewModelModel.login(email, password)
             }
         }
-        
-//        binding.btnLogin.setOnClickListener{
-//                val email = binding.etLoginemail.text.toString()
-//                val password = binding.etLoginpassword.text.toString()
-//                
-//                if (
-//                    email.isEmpty()
-//                    or !Matcher.emailValid(email)
-//                    or password.isEmpty()
-//                    or (password.length < 6)
-//                ){
-//                    Toast.makeText(this, "Please check your data", Toast.LENGTH_SHORT).show()
-//                }else{
-//                    loginViewModelModel.login(email, password).observe(this){
-//                        when (it) {
-//                            is Result.Loading -> {
-//                                Log.d("TAG", "onCreate: LOGIN+LOADING")
-//                                binding.pbLoginprogressbar.visibility = View.VISIBLE
-//                            }
-//                            is Result.Error -> {
-//                                Log.d("TAG", "onCreate: LOGIN+ERROR")
-//                                binding.pbLoginprogressbar.visibility = View.GONE
-//                            }
-//                            is Result.Success -> {
-//                                Log.d("TAG", "onCreate: LOGIN+SUCCESS")
-//                                binding.pbLoginprogressbar.visibility = View.GONE
-//                                if (it.data.error == false && it.data.message == "success"){
-//                                    Log.d("TAG", "onCreate: LOGIN+USER VALID")
-//                                    val loginCredential = it.data.loginResult
-//                                    Log.d("TAG", "onCreate REs: $loginCredential")
-//                                    Log.d("TAG", "onCreate: BE1")
-//                                    val user = User(
-//                                        name = loginCredential?.name.toString(),
-//                                        userId = loginCredential?.userId.toString(),
-//                                        token = loginCredential?.token.toString(),
-//                                    )
-//                                    Log.d("TAG", "onCreate: BE")
-//                                    UserPreference(this).setUser(user)
-//                                    Log.d("TAG", "onCreate: $user")
-//                                    
-//                                    startActivity(Intent(this, StoryActivity::class.java))
-//                                    finish()
-//                                }else{
-//                                    Toast.makeText(this, getString(R.string.wrong_email_or_password), Toast.LENGTH_SHORT).show()
-//                                }
-//                            }
-//                            else -> {}
-//                        }
-//                    }
-//                }
-//        }
-        
     }
 }

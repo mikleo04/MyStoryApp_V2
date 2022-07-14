@@ -10,14 +10,10 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
-import com.example.mystoryapp.data.User
 import com.example.mystoryapp.database.Injection
 import com.example.mystoryapp.databinding.ActivityAddStoryBinding
 import com.example.mystoryapp.preferences.UserPreference
@@ -26,16 +22,14 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import com.example.mystoryapp.database.Result
-import com.example.mystoryapp.ui.story.main.StoryActivity
 
 class AddStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddStoryBinding
     private lateinit var addStoryModel: AddStoryViewModel
     private var photoFile: File? = null
-    private lateinit var user: User
 
     companion object{
-        const val CAMERA_X_RESULT_CODE = 1
+        const val CAMERA_X_RESULT_CODE = 22
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +37,6 @@ class AddStoryActivity : AppCompatActivity() {
         binding = ActivityAddStoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
         addStoryModel = AddStoryViewModel(Injection.provideRepository(this, UserPreference(this).getUser().token.toString()))
-        user = UserPreference(this).getUser()
 
         binding.btnAddstorygalery.setOnClickListener{
             val intent = Intent()
@@ -59,23 +52,16 @@ class AddStoryActivity : AppCompatActivity() {
                 addStoryModel.addNewStory(binding.etAddstorynote.text.toString(), 1.0, 1.0, photoFile!!).observe(this){
                     when (it) {
                         is Result.Loading -> {
-                            Log.d("TAG", "onCreate: LOADING")
+                            Toast.makeText(this, "Please wait", Toast.LENGTH_SHORT).show()
                         }
                         is Result.Error -> {
                             Toast.makeText(this, "Add story gagal", Toast.LENGTH_SHORT).show()
-                            Log.d("TAG", "onCreate: ERROR")
                         }
                         is Result.Success -> {
-//                            binding.addStoryUploadProgressBar.visibility = View.GONE
-//                            val intent = Intent()
-//                            intent.putExtra(StoryActivity.ADD_STORY_SUCCESS_EXTRA, true)
-//                            setResult(StoryActivity.ADD_STORY_RESULT_CODE, intent)
                             if(it.data.error == false){
                                 finish()
-                                Log.d("TAG", "onCreate: SUCCESS")
                             }else{
-                                Log.d("TAG", "onCreate: SUCCESS: ERROR")
-                                
+                                Toast.makeText(this, "Add story gagal", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -156,9 +142,7 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
     private fun createTemporaryFile(uri: Uri): File {
-        val directory: File? = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val tempFile = File.createTempFile("tempFile", ".jpg", directory)
-
+        val tempFile = File.createTempFile("tempFile", ".jpg", this.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
         val buffer = ByteArray(1024)
         var len: Int
 

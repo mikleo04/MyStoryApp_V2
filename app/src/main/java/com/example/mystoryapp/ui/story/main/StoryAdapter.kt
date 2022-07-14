@@ -33,18 +33,9 @@ class StoryAdapter: PagingDataAdapter<ListStoryItem, StoryAdapter.ListViewHolder
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         val t = getItem(position)
         if (t != null) holder.bind(t)
-        
-//        holder.binding.rvRowname.text = storyList[position].name
-//        holder.binding.rvRowdate.text = storyList[position].createdAt.toString().substring(0,10)
-
-//        Glide.with(holder.binding.root.context)
-//            .load(storyList[position].photoUrl)
-//            .into(holder.binding.rvRowimagebanner)
         if (t != null)
             holder.itemView.setOnClickListener{onItemClickCallback.onItemClicked(t)}
     }
-    
-//    override fun getItemCount(): Int = storyList.size
 
     fun notifyDatasetChangedHelper(){
         notifyDataSetChanged()
@@ -62,12 +53,8 @@ class StoryAdapter: PagingDataAdapter<ListStoryItem, StoryAdapter.ListViewHolder
             binding.rvRowname.text = data.name
             binding.rvRowdate.text = data.createdAt
             
-
-            val requestOptions = RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
-
             Glide.with(binding.root.context)
                 .load(data.photoUrl)
-                .apply(requestOptions)
                 .into(binding.rvRowimagebanner)
         }
     }

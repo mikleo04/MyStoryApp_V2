@@ -11,10 +11,8 @@ import com.example.mystoryapp.databinding.ItemLoadingBinding
 
 class LoadingStateAdapter(private val retry: () -> Unit) : LoadStateAdapter<LoadingStateAdapter.LoadingStateViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LoadingStateViewHolder {
-        val binding = ItemLoadingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return LoadingStateViewHolder(binding, retry)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LoadingStateViewHolder =
+        LoadingStateViewHolder(ItemLoadingBinding.inflate(LayoutInflater.from(parent.context), parent, false), retry)
 
     override fun onBindViewHolder(holder: LoadingStateViewHolder, loadState: LoadState) {
         holder.bind(loadState)
@@ -22,16 +20,11 @@ class LoadingStateAdapter(private val retry: () -> Unit) : LoadStateAdapter<Load
 
     class LoadingStateViewHolder(private val binding: ItemLoadingBinding, retry: () -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
-
-        init {
-            binding.rvItemLoadingRetryButton.setOnClickListener { retry.invoke() }
-        }
-
+        init { binding.rvItemLoadingRetryButton.setOnClickListener { retry.invoke() } }
         fun bind(loadState: LoadState) {
             if (loadState is LoadState.Error) {
                 binding.rvItemLoadingErrorMsg.text = loadState.error.localizedMessage
             }
-            Log.d("TAG", "bind: LOAD STATE: $loadState")
             binding.rvItemLoadingProgressBar.isVisible = loadState is LoadState.Loading
             binding.rvItemLoadingRetryButton.isVisible = loadState is LoadState.Error
             binding.rvItemLoadingErrorMsg.isVisible = loadState is LoadState.Error

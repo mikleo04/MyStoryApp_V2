@@ -27,10 +27,7 @@ import com.example.mystoryapp.ui.story.maps.StoryMapsActivity
 
 class StoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStoryBinding
-//    private lateinit var storyModel: StoryViewModel
     private lateinit var listStoryAdapter: StoryAdapter
-    private var storyList = arrayListOf<ListStoryItem>()
-
     private val storyModel: StoryModel by viewModels {
         ViewModelFactory(this, UserPreference(this).getUser().token.toString())
     }
@@ -44,32 +41,17 @@ class StoryActivity : AppCompatActivity() {
             }
         )
         setContentView(binding.root)
-//        storyModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(
-//            StoryViewModel::class.java)
-//        listStoryAdapter = StoryAdapter(storyList)
-
         supportActionBar?.title = getString(R.string.app_name)
 
         binding.fabAddstory.setOnClickListener{
             startActivity(Intent(this, AddStoryActivity::class.java))
         }
-        
         showStoryRecyclerList()
         storyModel.getStoryMediator().observe(this){
-//            storyList.clear()
-//            storyList = it.listStory as ArrayList<ListStoryItem>
             binding.pbStoryprogressbar.visibility = View.GONE
             listStoryAdapter.submitData(lifecycle, it)
-//            showStoryRecyclerList()
         }
-//        storyModel.isLoading.observe(this){
-//            if (it){
-//                binding.pbStoryprogressbar.visibility = View.VISIBLE
-//            }else{
-//                binding.pbStoryprogressbar.visibility = View.GONE
-//            }
-//        }
-//        storyModel.getAllStory(UserPreference(this).getUser().token.toString())
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -94,7 +76,6 @@ class StoryActivity : AppCompatActivity() {
                 }
             }
             R.id.option_menu_refresh -> {
-//                storyModel.getAllStory(UserPreference(this).getUser().token.toString())
                 listStoryAdapter.notifyDatasetChangedHelper()
                 binding.pbStoryprogressbar.visibility = View.VISIBLE
                 listStoryAdapter.refresh()
@@ -111,12 +92,10 @@ class StoryActivity : AppCompatActivity() {
     
     override fun onResume() {
         super.onResume()
-//        storyModel.getAllStory(UserPreference(this).getUser().token.toString())
         listStoryAdapter.notifyDatasetChangedHelper()
     }
 
     private fun showStoryRecyclerList(){
-//        listStoryAdapter = StoryAdapter(storyList)
         binding.rvStorylist.layoutManager = LinearLayoutManager(this@StoryActivity)
         listStoryAdapter.setOnItemClickCallback(object : StoryAdapter.OnItemClickCallback{
             override fun onItemClicked(data: ListStoryItem) {
