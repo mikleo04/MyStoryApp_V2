@@ -37,6 +37,11 @@ class StoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityStoryBinding.inflate(layoutInflater)
         listStoryAdapter = StoryAdapter()
+        listStoryAdapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                listStoryAdapter.retry()
+            }
+        )
         setContentView(binding.root)
 //        storyModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(
 //            StoryViewModel::class.java)
@@ -54,7 +59,7 @@ class StoryActivity : AppCompatActivity() {
 //            storyList = it.listStory as ArrayList<ListStoryItem>
             binding.pbStoryprogressbar.visibility = View.GONE
             listStoryAdapter.submitData(lifecycle, it)
-            showStoryRecyclerList()
+//            showStoryRecyclerList()
         }
 //        storyModel.isLoading.observe(this){
 //            if (it){
@@ -108,7 +113,6 @@ class StoryActivity : AppCompatActivity() {
     private fun showStoryRecyclerList(){
 //        listStoryAdapter = StoryAdapter(storyList)
         binding.rvStorylist.layoutManager = LinearLayoutManager(this@StoryActivity)
-
         listStoryAdapter.setOnItemClickCallback(object : StoryAdapter.OnItemClickCallback{
             override fun onItemClicked(data: ListStoryItem) {
                 val intent = Intent(applicationContext, DetailStoryActivity::class.java)
@@ -116,6 +120,10 @@ class StoryActivity : AppCompatActivity() {
                 startActivity(intent, ActivityOptionsCompat.makeSceneTransitionAnimation(this@StoryActivity as Activity).toBundle())
             }
         })
-        binding.rvStorylist.adapter = listStoryAdapter
+        binding.rvStorylist.adapter = listStoryAdapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                listStoryAdapter.retry()
+            }
+        )
     }
 }
