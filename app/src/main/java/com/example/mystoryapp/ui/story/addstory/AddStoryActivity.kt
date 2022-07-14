@@ -56,7 +56,7 @@ class AddStoryActivity : AppCompatActivity() {
             if (photoFile == null){
                 Toast.makeText(this, "Photo is required", Toast.LENGTH_SHORT).show()
             }else{
-                addStoryModel.addNewStory(binding.etAddstorynote.text.toString(), 0.0, 0.0, photoFile!!).observe(this){
+                addStoryModel.addNewStory(binding.etAddstorynote.text.toString(), 1.0, 1.0, photoFile!!).observe(this){
                     when (it) {
                         is Result.Loading -> {
                             Log.d("TAG", "onCreate: LOADING")
@@ -70,21 +70,19 @@ class AddStoryActivity : AppCompatActivity() {
 //                            val intent = Intent()
 //                            intent.putExtra(StoryActivity.ADD_STORY_SUCCESS_EXTRA, true)
 //                            setResult(StoryActivity.ADD_STORY_RESULT_CODE, intent)
-                            finish()
-                            Log.d("TAG", "onCreate: SUCCESS")
+                            if(it.data.error == false){
+                                finish()
+                                Log.d("TAG", "onCreate: SUCCESS")
+                            }else{
+                                Log.d("TAG", "onCreate: SUCCESS: ERROR")
+                                
+                            }
                         }
                     }
                 }
             }
         }
-
-//        addStoryModel.addNewStoryResponse.observe(this){
-//            if(it.error == false){
-//                finish()
-//            }else{
-//                Toast.makeText(this, "Add story gagal", Toast.LENGTH_SHORT).show()
-//            }
-//        }
+        
         binding.btnAddstorycamera.setOnClickListener {
             if (!allPermissionsGranted()) {
                 ActivityCompat.requestPermissions(

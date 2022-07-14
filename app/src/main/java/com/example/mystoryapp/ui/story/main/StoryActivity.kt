@@ -23,6 +23,7 @@ import com.example.mystoryapp.ui.login.MainActivity
 import com.example.mystoryapp.preferences.UserPreference
 import com.example.mystoryapp.ui.StoryModel
 import com.example.mystoryapp.ui.ViewModelFactory
+import com.example.mystoryapp.ui.story.maps.StoryMapsActivity
 
 class StoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStoryBinding
@@ -98,6 +99,10 @@ class StoryActivity : AppCompatActivity() {
                 binding.pbStoryprogressbar.visibility = View.VISIBLE
                 listStoryAdapter.refresh()
                 listStoryAdapter.notifyDataSetChanged()
+            }
+            R.id.option_menu_maps -> {
+                val intent = Intent(this, StoryMapsActivity::class.java)
+                startActivity(intent)
             }
         }
 

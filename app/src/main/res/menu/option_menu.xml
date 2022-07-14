@@ -12,6 +12,11 @@
         android:id="@+id/option_menu_log_out"
         android:icon="@drawable/ic_logout"
         app:showAsAction="always"/>
+
+        <item android:title="Maps"
+            android:id="@+id/option_menu_maps"
+            android:icon="@drawable/ic_baseline_map_24"
+            app:showAsAction="ifRoom"/>
     </group>
 
 </menu>

@@ -35,6 +35,9 @@
         <activity
             android:name="com.example.mystoryapp.ui.story.addstory.AddStoryActivity"
             android:exported="false" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAMPZo7C3Rajyc32Xk7rz2RdPWAZhVRJUE" />
         <activity
             android:name="com.example.mystoryapp.ui.register.RegisterActivity"
             android:exported="false" />
