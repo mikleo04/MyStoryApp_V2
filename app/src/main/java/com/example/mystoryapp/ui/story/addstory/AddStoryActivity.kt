@@ -10,6 +10,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.mystoryapp.data.User
+import com.example.mystoryapp.database.Injection
 import com.example.mystoryapp.databinding.ActivityAddStoryBinding
 import com.example.mystoryapp.preferences.UserPreference
 import java.io.File
@@ -40,9 +42,7 @@ class AddStoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAddStoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        addStoryModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(
-            AddStoryViewModel::class.java)
-        
+        addStoryModel = AddStoryViewModel(Injection.provideRepository(this, UserPreference(this).getUser().token.toString()))
         user = UserPreference(this).getUser()
 
         binding.btnAddstorygalery.setOnClickListener{
@@ -58,18 +58,20 @@ class AddStoryActivity : AppCompatActivity() {
             }else{
                 addStoryModel.addNewStory(binding.etAddstorynote.text.toString(), 0.0, 0.0, photoFile!!).observe(this){
                     when (it) {
-//                        is Result.Loading -> {
-//                            binding.addStoryUploadProgressBar.visibility = View.VISIBLE
-//                        }
+                        is Result.Loading -> {
+                            Log.d("TAG", "onCreate: LOADING")
+                        }
                         is Result.Error -> {
                             Toast.makeText(this, "Add story gagal", Toast.LENGTH_SHORT).show()
+                            Log.d("TAG", "onCreate: ERROR")
                         }
                         is Result.Success -> {
 //                            binding.addStoryUploadProgressBar.visibility = View.GONE
-                            val intent = Intent()
+//                            val intent = Intent()
 //                            intent.putExtra(StoryActivity.ADD_STORY_SUCCESS_EXTRA, true)
 //                            setResult(StoryActivity.ADD_STORY_RESULT_CODE, intent)
                             finish()
+                            Log.d("TAG", "onCreate: SUCCESS")
                         }
                     }
                 }
