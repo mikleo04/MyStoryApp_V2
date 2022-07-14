@@ -14,33 +14,29 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
-import com.example.mystoryapp.data.User
+import com.example.mystoryapp.database.Injection
 import com.example.mystoryapp.databinding.ActivityAddStoryBinding
 import com.example.mystoryapp.preferences.UserPreference
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
+import com.example.mystoryapp.database.Result
 
 class AddStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddStoryBinding
     private lateinit var addStoryModel: AddStoryViewModel
     private var photoFile: File? = null
-    private lateinit var user: User
 
     companion object{
-        const val CAMERA_X_RESULT_CODE = 1
+        const val CAMERA_X_RESULT_CODE = 22
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddStoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        addStoryModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(
-            AddStoryViewModel::class.java)
-        
-        user = UserPreference(this).getUser()
+        addStoryModel = AddStoryViewModel(Injection.provideRepository(this, UserPreference(this).getUser().token.toString()))
 
         binding.btnAddstorygalery.setOnClickListener{
             val intent = Intent()
@@ -53,17 +49,26 @@ class AddStoryActivity : AppCompatActivity() {
             if (photoFile == null){
                 Toast.makeText(this, "Photo is required", Toast.LENGTH_SHORT).show()
             }else{
-                addStoryModel.addNewStory(binding.etAddstorynote.text.toString(), 0.0, 0.0, photoFile!!, user.token.toString())
+                addStoryModel.addNewStory(binding.etAddstorynote.text.toString(), 1.0, 1.0, photoFile!!).observe(this){
+                    when (it) {
+                        is Result.Loading -> {
+                            Toast.makeText(this, "Please wait", Toast.LENGTH_SHORT).show()
+                        }
+                        is Result.Error -> {
+                            Toast.makeText(this, "Add story gagal", Toast.LENGTH_SHORT).show()
+                        }
+                        is Result.Success -> {
+                            if(it.data.error == false){
+                                finish()
+                            }else{
+                                Toast.makeText(this, "Add story gagal", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
             }
         }
-
-        addStoryModel.addNewStoryResponse.observe(this){
-            if(it.error == false){
-                finish()
-            }else{
-                Toast.makeText(this, "Add story gagal", Toast.LENGTH_SHORT).show()
-            }
-        }
+        
         binding.btnAddstorycamera.setOnClickListener {
             if (!allPermissionsGranted()) {
                 ActivityCompat.requestPermissions(
@@ -137,9 +142,7 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
     private fun createTemporaryFile(uri: Uri): File {
-        val directory: File? = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val tempFile = File.createTempFile("tempFile", ".jpg", directory)
-
+        val tempFile = File.createTempFile("tempFile", ".jpg", this.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
         val buffer = ByteArray(1024)
         var len: Int
 

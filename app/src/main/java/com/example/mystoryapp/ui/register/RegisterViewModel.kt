@@ -15,10 +15,10 @@ class RegisterViewModel: ViewModel() {
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
-    
+
     fun register(name: String, email: String, password: String) {
         _isLoading.value = true
-        val client = ApiConfig.getApiService().register(name, email, password)
+        val client = ApiConfig.apiService("").register(name, email, password)
         client.enqueue(object : Callback<RegisterResponse> {
             override fun onResponse(
                 call: Call<RegisterResponse>,

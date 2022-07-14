@@ -4,7 +4,7 @@ import android.content.Context
 import com.example.mystoryapp.data.User
 
 class UserPreference(context: Context) {
-    private val preferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    private val preferences = context.getSharedPreferences("user_preferences_data", Context.MODE_PRIVATE)
 
     fun setUser(u: User){
         val editor = preferences.edit()
@@ -12,7 +12,7 @@ class UserPreference(context: Context) {
         editor.putString("email", u.email)
         editor.putString("userId", u.userId)
         editor.putString("token", u.token)
-        editor.apply()
+        editor.commit()
     }
 
     fun getUser(): User{

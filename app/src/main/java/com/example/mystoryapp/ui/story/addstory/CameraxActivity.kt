@@ -21,11 +21,11 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class CameraxActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityCameraxBinding
-    private lateinit var cameraExecutor: ExecutorService
 
-    private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    private lateinit var binding: ActivityCameraxBinding
     private var imageCapture: ImageCapture? = null
+    private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    private lateinit var cameraExecutor: ExecutorService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,12 +57,52 @@ class CameraxActivity : AppCompatActivity() {
         supportActionBar?.hide()
         startCamera()
     }
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
+        cameraProviderFuture.addListener({
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+            val preview = Preview.Builder()
+                .build()
+                .also {
+                    it.setSurfaceProvider(binding.cameraViewFinder.surfaceProvider)
+                }
+
+            imageCapture = ImageCapture.Builder().build()
+
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    this,
+                    cameraSelector,
+                    preview,
+                    imageCapture
+                )
+
+            } catch (exc: Exception) {
+                Toast.makeText(
+                    this@CameraxActivity,
+                    getString(R.string.failed_to_start_camera),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }, ContextCompat.getMainExecutor(this))
+    }
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
     }
+    private fun createFile(application: Application): File {
+        val mediaDir = application.externalMediaDirs.firstOrNull()?.let {
+            File(it, application.resources.getString(R.string.app_name)).apply { mkdirs() }
+        }
 
+        val outputDirectory = if (
+            mediaDir != null && mediaDir.exists()
+        ) mediaDir else application.filesDir
+
+        return File(outputDirectory, "TempFile.jpg")
+    }
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
 
@@ -95,48 +135,8 @@ class CameraxActivity : AppCompatActivity() {
         )
     }
 
-    private fun createFile(application: Application): File {
-        val mediaDir = application.externalMediaDirs.firstOrNull()?.let {
-            File(it, application.resources.getString(R.string.app_name)).apply { mkdirs() }
-        }
 
-        val outputDirectory = if (
-            mediaDir != null && mediaDir.exists()
-        ) mediaDir else application.filesDir
 
-        return File(outputDirectory, "TempFile.jpg")
-    }
-
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
-        cameraProviderFuture.addListener({
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(binding.cameraViewFinder.surfaceProvider)
-                }
-
-            imageCapture = ImageCapture.Builder().build()
-
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this,
-                    cameraSelector,
-                    preview,
-                    imageCapture
-                )
-
-            } catch (exc: Exception) {
-                Toast.makeText(
-                    this@CameraxActivity,
-                    getString(R.string.failed_to_start_camera),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }, ContextCompat.getMainExecutor(this))
-    }
+    
     
 }

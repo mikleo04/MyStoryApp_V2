@@ -9,7 +9,7 @@ import com.example.mystoryapp.databinding.ActivityDetailStoryBinding
 class DetailStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailStoryBinding
     companion object{
-        const val USER_DETAIL_EXTRA = "userDetailExtra"
+        const val USER_DETAIL_EXTRA = "myuserDetailExtraData"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +27,6 @@ class DetailStoryActivity : AppCompatActivity() {
         Glide.with(binding.root.context)
             .load(data?.photoUrl)
             .into(binding.ivDetailbanner)
-
-
+        
     }
 }
