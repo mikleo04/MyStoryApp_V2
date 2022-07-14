@@ -23,7 +23,6 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registerViewModelModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(RegisterViewModel::class.java)
-
         registerViewModelModel.registerResponse.observe(viewLifecycleOwner) {
             if (it.error == false) {
                 activity?.finish()
@@ -41,20 +40,20 @@ class RegisterFragment : Fragment() {
         }
 
         binding.btnRegister.setOnClickListener{
-                val name = binding.etRegistername.text.toString()
-                val email = binding.etRegisteremail.text.toString()
-                val password = binding.etRegisterpassword.text.toString()
+            val name = binding.etRegistername.text.toString()
+            val email = binding.etRegisteremail.text.toString()
+            val password = binding.etRegisterpassword.text.toString()
 
-                if (name.isEmpty()
-                    or email.isEmpty()
-                    or !Matcher.emailValid(email)
-                    or password.isEmpty()
-                    or (password.length < 6)
-                ){
-                    Toast.makeText(requireContext(), "Please check your data", Toast.LENGTH_SHORT).show()
-                }else{
-                    registerViewModelModel.register(name, email, password)
-                }
+            if (name.isEmpty()
+                or email.isEmpty()
+                or !Matcher.emailValid(email)
+                or password.isEmpty()
+                or (password.length < 6)
+            ){
+                Toast.makeText(requireContext(), "Please check your data", Toast.LENGTH_SHORT).show()
+            }else{
+                registerViewModelModel.register(name, email, password)
+            }
         }
         binding.tvHaveaccount.setOnClickListener { activity?.onBackPressed() }
     }
