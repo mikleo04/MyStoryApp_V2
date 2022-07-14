@@ -40,8 +40,8 @@ class StoryAdapter: PagingDataAdapter<ListStoryItem, StoryAdapter.ListViewHolder
 //        Glide.with(holder.binding.root.context)
 //            .load(storyList[position].photoUrl)
 //            .into(holder.binding.rvRowimagebanner)
-
-//        holder.itemView.setOnClickListener{onItemClickCallback.onItemClicked(storyList[holder.adapterPosition])}
+        if (t != null)
+            holder.itemView.setOnClickListener{onItemClickCallback.onItemClicked(t)}
     }
     
 //    override fun getItemCount(): Int = storyList.size
