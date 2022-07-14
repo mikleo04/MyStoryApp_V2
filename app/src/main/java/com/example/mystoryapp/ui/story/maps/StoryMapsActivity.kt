@@ -47,7 +47,7 @@ class StoryMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         markerIcon = vectorToBitmap(R.drawable.ic_map_marker_24, Color.parseColor("#C12E2E"))
         
         try {
-            if (!mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_night))) {
+            if (!mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_light))) {
                 Log.e("TAG", "MAP STYLE ERROR.")
             }
         } catch (exception: Resources.NotFoundException) {

@@ -51,7 +51,7 @@ class StoryAdapter: PagingDataAdapter<ListStoryItem, StoryAdapter.ListViewHolder
     class ListViewHolder(var binding: RvItemRowsBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(data: ListStoryItem) {
             binding.rvRowname.text = data.name
-            binding.rvRowdate.text = data.createdAt
+            binding.rvRowdate.text = data.createdAt.toString().substring(0,10)
             
             Glide.with(binding.root.context)
                 .load(data.photoUrl)

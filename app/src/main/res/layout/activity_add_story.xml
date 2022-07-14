@@ -86,9 +86,7 @@
                 android:autofillHints="name"
                 android:ellipsize="end"
                 android:gravity="top"
-                android:hint="@string/write_the_story"
-                android:inputType="textMultiLine"
-                android:text="@string/content_of_story" />
+                android:inputType="textMultiLine" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
