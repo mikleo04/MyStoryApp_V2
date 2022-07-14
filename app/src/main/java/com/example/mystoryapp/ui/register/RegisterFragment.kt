@@ -25,59 +25,39 @@ class RegisterFragment : Fragment() {
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        registerViewModelModel = RegisterViewModel(Injection.provideRepository(requireActivity()))
+//        registerViewModelModel = RegisterViewModel(Injection.provideRepository(requireActivity()))
+        registerViewModelModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(RegisterViewModel::class.java)
+        registerViewModelModel.registerResponse.observe(viewLifecycleOwner) {
+            if (it.error == false) {
+                activity?.finish()
+            } else {
+                Toast.makeText(context, "Registration Failed", Toast.LENGTH_SHORT).show()
+            }
+        }
 
-//        registerViewModelModel.registerResponse.observe(viewLifecycleOwner) {
-//            if (it.error == false) {
-//                activity?.finish()
-//            } else {
-//                Toast.makeText(context, "Registration Failed", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-
-//        registerViewModelModel.isLoading.observe(viewLifecycleOwner) {
-//            if (it) {
-//                binding.pbRegisterprogressbar.visibility = View.VISIBLE
-//            } else {
-//                binding.pbRegisterprogressbar.visibility = View.GONE
-//            }
-//        }
+        registerViewModelModel.isLoading.observe(viewLifecycleOwner) {
+            if (it) {
+                binding.pbRegisterprogressbar.visibility = View.VISIBLE
+            } else {
+                binding.pbRegisterprogressbar.visibility = View.GONE
+            }
+        }
 
         binding.btnRegister.setOnClickListener{
-                val name = binding.etRegistername.text.toString()
-                val email = binding.etRegisteremail.text.toString()
-                val password = binding.etRegisterpassword.text.toString()
+            val name = binding.etRegistername.text.toString()
+            val email = binding.etRegisteremail.text.toString()
+            val password = binding.etRegisterpassword.text.toString()
 
-                if (name.isEmpty()
-                    or email.isEmpty()
-                    or !Matcher.emailValid(email)
-                    or password.isEmpty()
-                    or (password.length < 6)
-                ){
-                    Toast.makeText(requireContext(), "Please check your data", Toast.LENGTH_SHORT).show()
-                }else{
-                    registerViewModelModel.register(name, email, password).observe(viewLifecycleOwner){
-                        when (it) {
-                            is Result.Loading -> {
-                                binding.pbRegisterprogressbar.visibility = View.VISIBLE
-                                Log.d("TAG", "onViewCreated: LOADING")
-                            }
-                            is Result.Error -> {
-                                binding.pbRegisterprogressbar.visibility = View.GONE
-                                Log.d("TAG", "onViewCreated: ERROR")
-                            }
-                            is Result.Success -> {
-                                Log.d("TAG", "onViewCreated: SUCCESS")
-                                binding.pbRegisterprogressbar.visibility = View.GONE
-                                if (it.data.error == false){
-                                    activity?.finish()
-                                }else{
-                                    Toast.makeText(context, "Registration Failed", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }
-                    }
-                }
+            if (name.isEmpty()
+                or email.isEmpty()
+                or !Matcher.emailValid(email)
+                or password.isEmpty()
+                or (password.length < 6)
+            ){
+                Toast.makeText(requireContext(), "Please check your data", Toast.LENGTH_SHORT).show()
+            }else{
+                registerViewModelModel.register(name, email, password)
+            }
         }
         binding.tvHaveaccount.setOnClickListener { activity?.onBackPressed() }
     }

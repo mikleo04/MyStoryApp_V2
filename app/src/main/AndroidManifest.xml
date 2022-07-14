@@ -2,16 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.mystoryapp">
-
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-feature android:name="android.hardware.camera" />
-
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -26,23 +23,9 @@
         <activity
             android:name=".ui.story.maps.StoryMapsActivity"
             android:exported="false" />
-        <activity
-            android:name="com.example.mystoryapp.ui.story.addstory.CameraxActivity"
-            android:exported="false" />
+
         <activity
             android:name="com.example.mystoryapp.ui.story.detail.DetailStoryActivity"
-            android:exported="false" />
-        <activity
-            android:name="com.example.mystoryapp.ui.story.addstory.AddStoryActivity"
-            android:exported="false" />
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAMPZo7C3Rajyc32Xk7rz2RdPWAZhVRJUE" />
-        <activity
-            android:name="com.example.mystoryapp.ui.register.RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name="com.example.mystoryapp.ui.story.main.StoryActivity"
             android:exported="false" />
         <activity
             android:name="com.example.mystoryapp.ui.login.MainActivity"
@@ -53,6 +36,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.example.mystoryapp.ui.story.addstory.AddStoryActivity"
+            android:exported="false" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAMPZo7C3Rajyc32Xk7rz2RdPWAZhVRJUE" />
+        <activity
+            android:name="com.example.mystoryapp.ui.register.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.mystoryapp.ui.story.addstory.CameraxActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.example.mystoryapp.ui.story.main.StoryActivity"
+            android:exported="false" />
     </application>
-
 </manifest>

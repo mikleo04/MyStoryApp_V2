@@ -10,6 +10,32 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class LoginViewModel(private val storyRepository: StoryRepo) : ViewModel(){
-    fun login(email: String, password: String) = storyRepository.login(email, password)
+class LoginViewModel : ViewModel(){
+    private val _loginResponse = MutableLiveData<LoginResponse>()
+    val loginResponse: LiveData<LoginResponse> = _loginResponse
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    fun login(email: String, password: String) {
+        _isLoading.value = true
+        val client = ApiConfig.apiService("").login(email, password)
+        client.enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(
+                call: Call<LoginResponse>,
+                response: Response<LoginResponse>
+            ) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _loginResponse.value = response.body()
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                _isLoading.value = false
+            }
+        })
+    }
+
+
 }

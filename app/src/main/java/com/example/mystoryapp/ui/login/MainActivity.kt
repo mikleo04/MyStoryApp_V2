@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        loginViewModelModel = LoginViewModel(Injection.provideRepository(this, UserPreference(this).getUser().token.toString()))
+        loginViewModelModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(LoginViewModel::class.java)
         // check apakah user sudah login 
         val user = UserPreference(this).getUser()
         if (
@@ -59,78 +59,92 @@ class MainActivity : AppCompatActivity() {
         }
         
         
-//        //Login process
-//        loginViewModelModel.isLoading.observe(this){
-//            if (it) binding.pbLoginprogressbar.visibility = View.VISIBLE
-//            else binding.pbLoginprogressbar.visibility = View.GONE
-//        }
-
-//        loginViewModelModel.loginResponse.observe(this) {
-//            if (it.error == false){
-//                val user = User(
-//                    name = it.loginResult?.name.toString(),
-//                    userId = it.loginResult?.userId.toString(),
-//                    token = it.loginResult?.token.toString(),
-//                )
-//                userPreference.setUser(user)
-//                startActivity(Intent(this, StoryActivity::class.java))
-//                finish()
-//            }else{
-//                Toast.makeText(this, getString(R.string.wrong_email_or_password), Toast.LENGTH_SHORT).show()
-//            }
-//
-//        }
-        
-        binding.btnLogin.setOnClickListener{
-                val email = binding.etLoginemail.text.toString()
-                val password = binding.etLoginpassword.text.toString()
-                
-                if (
-                    email.isEmpty()
-                    or !Matcher.emailValid(email)
-                    or password.isEmpty()
-                    or (password.length < 6)
-                ){
-                    Toast.makeText(this, "Please check your data", Toast.LENGTH_SHORT).show()
-                }else{
-                    loginViewModelModel.login(email, password).observe(this){
-                        when (it) {
-                            is Result.Loading -> {
-                                Log.d("TAG", "onCreate: LOGIN+LOADING")
-                                binding.pbLoginprogressbar.visibility = View.VISIBLE
-                            }
-                            is Result.Error -> {
-                                Log.d("TAG", "onCreate: LOGIN+ERROR")
-                                binding.pbLoginprogressbar.visibility = View.GONE
-                            }
-                            is Result.Success -> {
-                                Log.d("TAG", "onCreate: LOGIN+SUCCESS")
-                                binding.pbLoginprogressbar.visibility = View.GONE
-                                if (it.data.error == false && it.data.message == "success"){
-                                    Log.d("TAG", "onCreate: LOGIN+USER VALID")
-                                    val loginCredential = it.data.loginResult
-                                    Log.d("TAG", "onCreate REs: $loginCredential")
-                                    Log.d("TAG", "onCreate: BE1")
-                                    val user = User(
-                                        name = loginCredential?.name.toString(),
-                                        userId = loginCredential?.userId.toString(),
-                                        token = loginCredential?.token.toString(),
-                                    )
-                                    Log.d("TAG", "onCreate: BE")
-                                    UserPreference(this).setUser(user)
-                                    Log.d("TAG", "onCreate: $user")
-                                    
-                                    startActivity(Intent(this, StoryActivity::class.java))
-                                    finish()
-                                }else{
-                                    Toast.makeText(this, getString(R.string.wrong_email_or_password), Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                            else -> {}
-                        }
-                    }
-                }
+        //Login process
+        loginViewModelModel.isLoading.observe(this){
+            if (it) binding.pbLoginprogressbar.visibility = View.VISIBLE
+            else binding.pbLoginprogressbar.visibility = View.GONE
         }
+
+        loginViewModelModel.loginResponse.observe(this) {
+            if (it.error == false){
+                val user = User(
+                    name = it.loginResult?.name.toString(),
+                    userId = it.loginResult?.userId.toString(),
+                    token = it.loginResult?.token.toString(),
+                )
+                UserPreference(this).setUser(user)
+                startActivity(Intent(this, StoryActivity::class.java))
+                finish()
+            }else{
+                Toast.makeText(this, getString(R.string.wrong_email_or_password), Toast.LENGTH_SHORT).show()
+            }
+
+        }
+        binding.btnLogin.setOnClickListener{
+            val email = binding.etLoginemail.text.toString()
+            val password = binding.etLoginpassword.text.toString()
+            if (
+                email.isEmpty()
+                or !Matcher.emailValid(email)
+                or password.isEmpty()
+                or (password.length < 6)
+            ){
+                Toast.makeText(this, "Please check your data", Toast.LENGTH_SHORT).show()
+            }else{
+                loginViewModelModel.login(email, password)
+            }
+        }
+        
+//        binding.btnLogin.setOnClickListener{
+//                val email = binding.etLoginemail.text.toString()
+//                val password = binding.etLoginpassword.text.toString()
+//                
+//                if (
+//                    email.isEmpty()
+//                    or !Matcher.emailValid(email)
+//                    or password.isEmpty()
+//                    or (password.length < 6)
+//                ){
+//                    Toast.makeText(this, "Please check your data", Toast.LENGTH_SHORT).show()
+//                }else{
+//                    loginViewModelModel.login(email, password).observe(this){
+//                        when (it) {
+//                            is Result.Loading -> {
+//                                Log.d("TAG", "onCreate: LOGIN+LOADING")
+//                                binding.pbLoginprogressbar.visibility = View.VISIBLE
+//                            }
+//                            is Result.Error -> {
+//                                Log.d("TAG", "onCreate: LOGIN+ERROR")
+//                                binding.pbLoginprogressbar.visibility = View.GONE
+//                            }
+//                            is Result.Success -> {
+//                                Log.d("TAG", "onCreate: LOGIN+SUCCESS")
+//                                binding.pbLoginprogressbar.visibility = View.GONE
+//                                if (it.data.error == false && it.data.message == "success"){
+//                                    Log.d("TAG", "onCreate: LOGIN+USER VALID")
+//                                    val loginCredential = it.data.loginResult
+//                                    Log.d("TAG", "onCreate REs: $loginCredential")
+//                                    Log.d("TAG", "onCreate: BE1")
+//                                    val user = User(
+//                                        name = loginCredential?.name.toString(),
+//                                        userId = loginCredential?.userId.toString(),
+//                                        token = loginCredential?.token.toString(),
+//                                    )
+//                                    Log.d("TAG", "onCreate: BE")
+//                                    UserPreference(this).setUser(user)
+//                                    Log.d("TAG", "onCreate: $user")
+//                                    
+//                                    startActivity(Intent(this, StoryActivity::class.java))
+//                                    finish()
+//                                }else{
+//                                    Toast.makeText(this, getString(R.string.wrong_email_or_password), Toast.LENGTH_SHORT).show()
+//                                }
+//                            }
+//                            else -> {}
+//                        }
+//                    }
+//                }
+//        }
         
     }
 }

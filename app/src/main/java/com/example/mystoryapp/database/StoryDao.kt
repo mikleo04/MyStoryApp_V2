@@ -9,12 +9,12 @@ import com.example.mystoryapp.api.response.ListStoryItem
 
 @Dao
 interface StoryDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertStory(story: List<ListStoryItem>)
-
     @Query("SELECT * FROM story ORDER BY createdAt DESC")
     fun getAllStory(): PagingSource<Int, ListStoryItem>
-
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertStory(story: List<ListStoryItem>)
+    
     @Query("DELETE FROM story")
     suspend fun deleteAll()
 }
