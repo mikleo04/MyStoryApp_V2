@@ -12,7 +12,7 @@ class UserPreference(context: Context) {
         editor.putString("email", u.email)
         editor.putString("userId", u.userId)
         editor.putString("token", u.token)
-        editor.apply()
+        editor.commit()
     }
 
     fun getUser(): User{

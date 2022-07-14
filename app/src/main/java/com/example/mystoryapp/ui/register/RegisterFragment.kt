@@ -1,12 +1,14 @@
 package com.example.mystoryapp.ui.register
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.example.mystoryapp.database.Injection
 import com.example.mystoryapp.databinding.FragmentRegisterBinding
 import com.example.mystoryapp.tools.Matcher
 import com.example.mystoryapp.database.Result
@@ -23,7 +25,7 @@ class RegisterFragment : Fragment() {
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        registerViewModelModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(RegisterViewModel::class.java)
+        registerViewModelModel = RegisterViewModel(Injection.provideRepository(requireActivity()))
 
 //        registerViewModelModel.registerResponse.observe(viewLifecycleOwner) {
 //            if (it.error == false) {
@@ -54,15 +56,18 @@ class RegisterFragment : Fragment() {
                 ){
                     Toast.makeText(requireContext(), "Please check your data", Toast.LENGTH_SHORT).show()
                 }else{
-                    registerViewModelModel.register(name, email, password).observe(this){
+                    registerViewModelModel.register(name, email, password).observe(viewLifecycleOwner){
                         when (it) {
                             is Result.Loading -> {
                                 binding.pbRegisterprogressbar.visibility = View.VISIBLE
+                                Log.d("TAG", "onViewCreated: LOADING")
                             }
                             is Result.Error -> {
                                 binding.pbRegisterprogressbar.visibility = View.GONE
+                                Log.d("TAG", "onViewCreated: ERROR")
                             }
                             is Result.Success -> {
+                                Log.d("TAG", "onViewCreated: SUCCESS")
                                 binding.pbRegisterprogressbar.visibility = View.GONE
                                 if (it.data.error == false){
                                     activity?.finish()

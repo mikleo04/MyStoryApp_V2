@@ -3,6 +3,7 @@ package com.example.mystoryapp.ui.login
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,7 +20,7 @@ import com.example.mystoryapp.database.Result
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var userPreference: UserPreference
+//    private lateinit var userPreference: UserPreference
     private lateinit var loginViewModelModel: LoginViewModel
     companion object{
         const val USER_EXTRA = "user_extra_data_after_create_account"
@@ -83,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnLogin.setOnClickListener{
                 val email = binding.etLoginemail.text.toString()
                 val password = binding.etLoginpassword.text.toString()
+                
                 if (
                     email.isEmpty()
                     or !Matcher.emailValid(email)
@@ -94,23 +96,31 @@ class MainActivity : AppCompatActivity() {
                     loginViewModelModel.login(email, password).observe(this){
                         when (it) {
                             is Result.Loading -> {
+                                Log.d("TAG", "onCreate: LOGIN+LOADING")
                                 binding.pbLoginprogressbar.visibility = View.VISIBLE
                             }
                             is Result.Error -> {
+                                Log.d("TAG", "onCreate: LOGIN+ERROR")
                                 binding.pbLoginprogressbar.visibility = View.GONE
                             }
                             is Result.Success -> {
+                                Log.d("TAG", "onCreate: LOGIN+SUCCESS")
                                 binding.pbLoginprogressbar.visibility = View.GONE
-                                if (it.data.error == false){
+                                if (it.data.error == false && it.data.message == "success"){
+                                    Log.d("TAG", "onCreate: LOGIN+USER VALID")
                                     val loginCredential = it.data.loginResult
+                                    Log.d("TAG", "onCreate REs: $loginCredential")
+                                    Log.d("TAG", "onCreate: BE1")
                                     val user = User(
                                         name = loginCredential?.name.toString(),
                                         userId = loginCredential?.userId.toString(),
                                         token = loginCredential?.token.toString(),
                                     )
-                                    userPreference.setUser(user)
-                                    val intent = Intent(this, StoryActivity::class.java)
-                                    startActivity(intent)
+                                    Log.d("TAG", "onCreate: BE")
+                                    UserPreference(this).setUser(user)
+                                    Log.d("TAG", "onCreate: $user")
+                                    
+                                    startActivity(Intent(this, StoryActivity::class.java))
                                     finish()
                                 }else{
                                     Toast.makeText(this, getString(R.string.wrong_email_or_password), Toast.LENGTH_SHORT).show()
