@@ -11,9 +11,7 @@ import com.example.mystoryapp.api.response.ListStoryItem
 @OptIn(ExperimentalPagingApi::class)
 class StoryMediator( private val database: DatabaseStory, private val apiService: ApiService) : RemoteMediator<Int, ListStoryItem>() {
 
-    override suspend fun initialize(): InitializeAction {
-        return InitializeAction.LAUNCH_INITIAL_REFRESH
-    }
+    override suspend fun initialize(): InitializeAction = InitializeAction.LAUNCH_INITIAL_REFRESH
 
     @Suppress("UNCHECKED_CAST")
     override suspend fun load(
@@ -39,8 +37,8 @@ class StoryMediator( private val database: DatabaseStory, private val apiService
             }
         }
         try {
-            val response = apiService.getAllStory(1, page, state.config.pageSize)
-            val responseData: List<ListStoryItem> = response.listStory as List<ListStoryItem>
+            val responseData: List<ListStoryItem> = 
+                apiService.getAllStory(1, page, state.config.pageSize).listStory as List<ListStoryItem>
 
             val endOfPaginationReached = responseData.isEmpty()
 

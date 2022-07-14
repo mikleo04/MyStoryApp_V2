@@ -27,7 +27,6 @@ class DetailStoryActivity : AppCompatActivity() {
         Glide.with(binding.root.context)
             .load(data?.photoUrl)
             .into(binding.ivDetailbanner)
-
-
+        
     }
 }

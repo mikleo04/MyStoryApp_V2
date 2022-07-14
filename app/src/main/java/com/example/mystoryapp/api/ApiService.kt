@@ -34,13 +34,6 @@ interface ApiService {
         @Part photo: MultipartBody.Part,
     ): AddNewStoryResponse
     
-//    @FormUrlEncoded
-//    @POST("v1/login")
-//    suspend fun login(
-//        @Field("email") name: String,
-//        @Field("password") job: String
-//    ): LoginResponse
-
     @FormUrlEncoded
     @POST("v1/login")
     fun login(

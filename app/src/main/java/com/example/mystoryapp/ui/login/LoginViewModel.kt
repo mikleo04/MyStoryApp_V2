@@ -28,6 +28,8 @@ class LoginViewModel : ViewModel(){
                 _isLoading.value = false
                 if (response.isSuccessful) {
                     _loginResponse.value = response.body()
+                }else{
+                    _loginResponse.value = LoginResponse()
                 }
             }
 
