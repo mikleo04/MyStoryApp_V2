@@ -52,6 +52,7 @@ class StoryActivity : AppCompatActivity() {
         storyModel.getStoryMediator().observe(this){
 //            storyList.clear()
 //            storyList = it.listStory as ArrayList<ListStoryItem>
+            binding.pbStoryprogressbar.visibility = View.GONE
             listStoryAdapter.submitData(lifecycle, it)
             showStoryRecyclerList()
         }
